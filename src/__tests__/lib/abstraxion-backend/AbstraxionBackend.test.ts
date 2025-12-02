@@ -8,7 +8,6 @@ import {
   DatabaseAdapterRequiredError,
   RedirectUrlRequiredError,
   TreasuryRequiredError,
-  RpcUrlRequiredError,
   UserIdRequiredError,
   StateRequiredError,
   GranterRequiredError,
@@ -23,6 +22,18 @@ jest.mock("@burnt-labs/constants", () => ({
   }),
   xionGasValues: {
     gasPrice: "0.001uxion",
+  },
+  testnetChainInfo: {
+    rpc: "https://rpc.xion-testnet-2.burnt.com:443",
+    rest: "https://api.xion-testnet-2.burnt.com:443",
+    chainId: "xion-testnet-2",
+    chainName: "XION Testnet",
+  },
+  mainnetChainInfo: {
+    rpc: "https://rpc.xion-mainnet-1.burnt.com:443",
+    rest: "https://api.xion-mainnet-1.burnt.com:443",
+    chainId: "xion-mainnet-1",
+    chainName: "XION Mainnet",
   },
 }));
 
@@ -67,8 +78,7 @@ describe("AbstraxionBackend", () => {
   let backend: AbstraxionBackend;
   let databaseAdapter: TestDatabaseAdapter;
   const testConfig = {
-    rpcUrl: "https://rpc.xion-testnet-2.burnt.com",
-    dashboardUrl: "https://settings.testnet.burnt.com/",
+    network: "testnet" as const,
     redirectUrl: "https://myapp.com/callback",
     treasury: "xion1treasury123",
     encryptionKey: EncryptionService.generateEncryptionKey(),
@@ -136,21 +146,11 @@ describe("AbstraxionBackend", () => {
       }).toThrow(TreasuryRequiredError);
     });
 
-    it("should throw error for missing RPC URL", () => {
-      expect(() => {
-        new AbstraxionBackend({
-          ...testConfig,
-          databaseAdapter: databaseAdapter,
-          rpcUrl: "",
-        });
-      }).toThrow(RpcUrlRequiredError);
-    });
-
     it("should set different gas price for mainnet", () => {
       const mainnetBackend = new AbstraxionBackend({
         ...testConfig,
+        network: "mainnet" as const,
         databaseAdapter: databaseAdapter,
-        rpcUrl: "https://rpc.xion-mainnet.burnt.com",
       });
       expect(mainnetBackend.gasPriceDefault).toBeDefined();
       mainnetBackend.close();
@@ -661,7 +661,7 @@ describe("AbstraxionBackend", () => {
 
       expect(authz).toBeDefined();
       expect(authz.configureAbstraxionInstance).toHaveBeenCalledWith(
-        testConfig.rpcUrl,
+        backend.rpcUrl,
         options.contracts,
         options.stake,
         options.bank,

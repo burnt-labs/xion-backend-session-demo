@@ -65,7 +65,7 @@ describe("PrismaDatabaseAdapter", () => {
       const sessionKeyAddress = `xion1test-${Date.now()}-${Math.random()}`;
       await prisma.sessionKey.create({
         data: {
-          user: { connect: { id: user.id } },
+          userId: user.id,
           sessionKeyAddress,
           sessionKeyMaterial: "encrypted-material",
           sessionKeyExpiry: new Date(Date.now() + 86400000),
@@ -119,7 +119,7 @@ describe("PrismaDatabaseAdapter", () => {
       const sessionKeyAddress = `xion1test-${Date.now()}-${Math.random()}`;
       await prisma.sessionKey.create({
         data: {
-          user: { connect: { id: user1.id } },
+          userId: user1.id,
           sessionKeyAddress,
           sessionKeyMaterial: "encrypted-material",
           sessionKeyExpiry: new Date(Date.now() + 86400000),
@@ -148,7 +148,7 @@ describe("PrismaDatabaseAdapter", () => {
       const sessionKeyAddress = `xion1test-${Date.now()}-${Math.random()}`;
       await prisma.sessionKey.create({
         data: {
-          user: { connect: { id: user.id } },
+          userId: user.id,
           sessionKeyAddress,
           sessionKeyMaterial: "encrypted-material",
           sessionKeyExpiry: new Date(Date.now() + 86400000),
@@ -203,7 +203,7 @@ describe("PrismaDatabaseAdapter", () => {
       const sessionKeyAddress = `xion1test-${Date.now()}-${Math.random()}`;
       await prisma.sessionKey.create({
         data: {
-          user: { connect: { id: user1.id } },
+          userId: user1.id,
           sessionKeyAddress,
           sessionKeyMaterial: "encrypted-material",
           sessionKeyExpiry: new Date(Date.now() + 86400000),
@@ -240,7 +240,7 @@ describe("PrismaDatabaseAdapter", () => {
       const sessionKeyAddress = `xion1test-${Date.now()}-${Math.random()}`;
       await prisma.sessionKey.create({
         data: {
-          user: { connect: { id: user.id } },
+          userId: user.id,
           sessionKeyAddress,
           sessionKeyMaterial: "encrypted-material",
           sessionKeyExpiry: new Date(Date.now() + 86400000),
@@ -298,7 +298,7 @@ describe("PrismaDatabaseAdapter", () => {
       const sessionKeyAddress = `xion1test-${Date.now()}-${Math.random()}`;
       await prisma.sessionKey.create({
         data: {
-          user: { connect: { id: user1.id } },
+          userId: user1.id,
           sessionKeyAddress,
           sessionKeyMaterial: "encrypted-material",
           sessionKeyExpiry: new Date(Date.now() + 86400000),

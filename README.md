@@ -34,8 +34,7 @@ Create a `.env` file in the project root:
 DATABASE_URL="file:./dev.db"
 
 # XION Configuration
-XION_RPC_URL="https://rpc.xion-testnet-2.burnt.com/"
-XION_REST_URL="https://api.xion-testnet-2.burnt.com/"
+XION_NETWORK="testnet"
 XION_REDIRECT_URL="http://localhost:3000/api/callback/grant_session"
 XION_TREASURY="xion1..." # Your Treasury address
 

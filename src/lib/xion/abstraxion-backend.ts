@@ -11,9 +11,10 @@ export function getAbstraxionBackend(): AbstraxionBackend {
   }
 
   // ensure all environment variables are set
-  if (!process.env.XION_RPC_URL) {
-    throw new Error("XION_RPC_URL is not set");
+  if (!process.env.XION_NETWORK) {
+    process.env.XION_NETWORK = "testnet";
   }
+
   if (!process.env.XION_REDIRECT_URL) {
     throw new Error("XION_REDIRECT_URL is not set");
   }
@@ -27,13 +28,13 @@ export function getAbstraxionBackend(): AbstraxionBackend {
   const databaseAdapter = new PrismaDatabaseAdapter(prisma);
 
   const config = {
-    rpcUrl: process.env.XION_RPC_URL,
+    network: process.env.XION_NETWORK as "testnet" | "mainnet",
     redirectUrl: process.env.XION_REDIRECT_URL,
     treasury: process.env.XION_TREASURY,
     encryptionKey: process.env.ENCRYPTION_KEY,
     databaseAdapter,
     sessionKeyExpiryMs: parseInt(
-      process.env.SESSION_KEY_EXPIRY_MS || "86400000",
+      process.env.SESSION_KEY_EXPIRY_MS || "86400000"
     ),
     refreshThresholdMs: parseInt(process.env.REFRESH_THRESHOLD_MS || "3600000"),
     enableAuditLogging: true,

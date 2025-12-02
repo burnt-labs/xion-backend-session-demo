@@ -15,10 +15,6 @@ export function createAbstraxionBackend(
     );
   }
 
-  if (!config.rpcUrl) {
-    throw new Error("RPC URL is required");
-  }
-
   if (!config.redirectUrl) {
     throw new Error("Redirect URL is required");
   }
@@ -33,13 +29,6 @@ export function createAbstraxionBackend(
 
   if (!config.databaseAdapter) {
     throw new Error("Database adapter is required");
-  }
-
-  // Validate URLs
-  try {
-    new URL(config.rpcUrl);
-  } catch {
-    throw new Error("Invalid RPC URL format");
   }
 
   // Validate optional configuration

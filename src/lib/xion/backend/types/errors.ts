@@ -78,12 +78,6 @@ export class RedirectUrlRequiredError extends ConfigurationError {
   }
 }
 
-export class RpcUrlRequiredError extends ConfigurationError {
-  constructor() {
-    super("RPC URL is required", "RPC_URL_REQUIRED");
-  }
-}
-
 export class TreasuryRequiredError extends ConfigurationError {
   constructor() {
     super("Treasury is required", "TREASURY_REQUIRED");

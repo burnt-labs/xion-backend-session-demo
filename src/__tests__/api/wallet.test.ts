@@ -25,8 +25,8 @@ jest.mock("next-auth", () => ({
 }));
 
 // ensure all environment variables are set
-if (!process.env.XION_RPC_URL) {
-  process.env.XION_RPC_URL = "https://rpc.xion-testnet-2.burnt.com/";
+if (!process.env.XION_NETWORK) {
+  process.env.XION_NETWORK = "testnet";
 }
 if (!process.env.ENCRYPTION_KEY) {
   process.env.ENCRYPTION_KEY = EncryptionService.generateEncryptionKey();

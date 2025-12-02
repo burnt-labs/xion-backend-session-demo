@@ -7,7 +7,12 @@ import {
   ContractGrantDescription,
   SpendLimit,
 } from "@burnt-labs/abstraxion-core";
-import { fetchConfig, xionGasValues } from "@burnt-labs/constants";
+import {
+  fetchConfig,
+  mainnetChainInfo,
+  testnetChainInfo,
+  xionGasValues,
+} from "@burnt-labs/constants";
 import {
   AbstraxionBackendConfig,
   ConnectionInitResponse,
@@ -44,9 +49,6 @@ export class AbstraxionBackend {
     if (!config.treasury) {
       throw new e.TreasuryRequiredError();
     }
-    if (!config.rpcUrl) {
-      throw new e.RpcUrlRequiredError();
-    }
 
     // Initialize node-cache with 10 minutes TTL and automatic cleanup
     this._stateStore = new NodeCache({
@@ -72,6 +74,12 @@ export class AbstraxionBackend {
     return GasPrice.fromString(gasPriceConstant);
   }
 
+  public get rpcUrl(): string {
+    return this.config.network === "testnet"
+      ? testnetChainInfo.rpc
+      : mainnetChainInfo.rpc;
+  }
+
   /**
    * Initiate wallet connection flow
    * Generate session key and return authorization URL
@@ -79,7 +87,7 @@ export class AbstraxionBackend {
   async connectInit(
     userId: string,
     permissions?: Permissions,
-    grantedRedirectUrl?: string,
+    grantedRedirectUrl?: string
   ): Promise<ConnectionInitResponse> {
     // Validate input parameters
     if (!userId) {
@@ -117,7 +125,7 @@ export class AbstraxionBackend {
       const authorizationUrl = await this.buildAuthorizationUrl(
         sessionKey.address,
         state,
-        permissionsToStore,
+        permissionsToStore
       );
 
       return {
@@ -130,7 +138,9 @@ export class AbstraxionBackend {
         throw error;
       }
       throw new e.UnknownError(
-        `Failed to initiate connection: ${error instanceof Error ? error.message : String(error)}`,
+        `Failed to initiate connection: ${
+          error instanceof Error ? error.message : String(error)
+        }`
       );
     }
   }
@@ -172,7 +182,7 @@ export class AbstraxionBackend {
 
       // Get the session key info that was stored during connectInit
       const sessionKeyInfo = await this.sessionKeyManager.getLastSessionKeyInfo(
-        stateData.userId,
+        stateData.userId
       );
       if (!sessionKeyInfo) {
         throw new e.SessionKeyNotFoundError("Session key not found for user");
@@ -187,8 +197,9 @@ export class AbstraxionBackend {
       };
 
       // Don't use login method here, because the granter is not set yet
-      const keypair =
-        await this.sessionKeyManager.getSessionKeypair(sessionKeyInfo);
+      const keypair = await this.sessionKeyManager.getSessionKeypair(
+        sessionKeyInfo
+      );
       if (!keypair) {
         throw new e.EncryptionKeyRequiredError();
       }
@@ -200,7 +211,7 @@ export class AbstraxionBackend {
       const authz = this._createRawAbstraxionAuthz(stateData.userId);
       const pollSuccess = await authz.pollForGrants(
         keypairAddress,
-        request.granter,
+        request.granter
       );
       if (!pollSuccess) {
         throw new e.GrantedFailedError();
@@ -214,7 +225,7 @@ export class AbstraxionBackend {
         stateData.userId,
         sessionKeyInfo.sessionKeyAddress,
         request.granter, // Use granter as metaAccountAddress
-        permissions,
+        permissions
       );
 
       return {
@@ -246,13 +257,14 @@ export class AbstraxionBackend {
 
     try {
       // Get session key info first
-      const sessionKeyInfo =
-        await this.sessionKeyManager.getLastSessionKeyInfo(userId);
+      const sessionKeyInfo = await this.sessionKeyManager.getLastSessionKeyInfo(
+        userId
+      );
 
       if (sessionKeyInfo) {
         await this.sessionKeyManager.revokeSessionKey(
           userId,
-          sessionKeyInfo.sessionKeyAddress,
+          sessionKeyInfo.sessionKeyAddress
         );
       }
 
@@ -283,10 +295,11 @@ export class AbstraxionBackend {
       indexerUrl?: string;
       stake?: boolean;
       onRedirectMethod?: (url: string) => Promise<void>;
-    },
+    }
   ): Promise<AbstraxionAuth> {
-    const activeSessionKey =
-      await this.sessionKeyManager.getLastSessionKeyInfo(userId);
+    const activeSessionKey = await this.sessionKeyManager.getLastSessionKeyInfo(
+      userId
+    );
     if (
       !activeSessionKey ||
       !this.sessionKeyManager.isActive(activeSessionKey)
@@ -307,23 +320,23 @@ export class AbstraxionBackend {
       indexerUrl?: string;
       stake?: boolean;
       onRedirectMethod?: (url: string) => Promise<void>;
-    },
+    }
   ): AbstraxionAuth {
     const authz = new AbstraxionAuth(
       new DatabaseStorageStrategy(userId, this.sessionKeyManager),
       request
         ? new DatabaseRedirectStrategy(request, options?.onRedirectMethod)
-        : new InMemoryDummyRedirectStrategy(),
+        : new InMemoryDummyRedirectStrategy()
     );
     // Configure AbstraxionAuth instance
     authz.configureAbstraxionInstance(
-      this.config.rpcUrl,
+      this.rpcUrl,
       options?.contracts,
       options?.stake,
       options?.bank,
       this.config.redirectUrl,
       this.config.treasury,
-      options?.indexerUrl,
+      options?.indexerUrl
     );
     return authz;
   }
@@ -341,8 +354,9 @@ export class AbstraxionBackend {
     }
 
     try {
-      const sessionKeyInfo =
-        await this.sessionKeyManager.getLastSessionKeyInfo(userId);
+      const sessionKeyInfo = await this.sessionKeyManager.getLastSessionKeyInfo(
+        userId
+      );
 
       if (!sessionKeyInfo) {
         return {
@@ -401,7 +415,9 @@ export class AbstraxionBackend {
         throw error;
       }
       throw new e.UnknownError(
-        `Failed to refresh session key: ${error instanceof Error ? error.message : String(error)}`,
+        `Failed to refresh session key: ${
+          error instanceof Error ? error.message : String(error)
+        }`
       );
     }
   }
@@ -413,9 +429,9 @@ export class AbstraxionBackend {
   private async buildAuthorizationUrl(
     sessionKeyAddress: string,
     state: string,
-    permissions?: Permissions,
+    permissions?: Permissions
   ): Promise<string> {
-    const { dashboardUrl } = await fetchConfig(this.config.rpcUrl);
+    const { dashboardUrl } = await fetchConfig(this.rpcUrl);
     const url = new URL(dashboardUrl);
 
     // Add state parameter
@@ -433,7 +449,7 @@ export class AbstraxionBackend {
       if (permissions.contracts) {
         url.searchParams.set(
           "contracts",
-          JSON.stringify(permissions.contracts),
+          JSON.stringify(permissions.contracts)
         );
       }
       if (permissions.bank) {
