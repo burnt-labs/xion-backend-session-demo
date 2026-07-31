@@ -18,7 +18,7 @@ import {
 // Mock the fetchConfig function
 jest.mock("@burnt-labs/constants", () => ({
   fetchConfig: jest.fn().mockResolvedValue({
-    dashboardUrl: "https://settings.testnet.burnt.com/",
+    dashboardUrl: "https://auth.testnet.burnt.com/",
   }),
   xionGasValues: {
     gasPrice: "0.001uxion",
