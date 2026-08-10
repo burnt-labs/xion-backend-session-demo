@@ -1,4 +1,4 @@
-import { RateLimiterMemory } from "rate-limiter-flexible";
+import { RateLimiterMemory, RateLimiterRes } from "rate-limiter-flexible";
 
 // Create rate limiter instances
 const rateLimiter = new RateLimiterMemory({
@@ -32,6 +32,9 @@ export class RateLimitService {
         resetTime: Math.round(Date.now() / 1000) + result.msBeforeNext / 1000,
       };
     } catch (rejRes) {
+      if (!(rejRes instanceof RateLimiterRes)) {
+        throw rejRes;
+      }
       return {
         allowed: false,
         remaining: 0,
@@ -56,6 +59,9 @@ export class RateLimitService {
         resetTime: Math.round(Date.now() / 1000) + result.msBeforeNext / 1000,
       };
     } catch (rejRes) {
+      if (!(rejRes instanceof RateLimiterRes)) {
+        throw rejRes;
+      }
       return {
         allowed: false,
         remaining: 0,

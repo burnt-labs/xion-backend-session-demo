@@ -13,7 +13,7 @@ A NextJS application that provides backend API services for managing XION wallet
 
 ## Prerequisites
 
-- Node.js 20+
+- Node.js 24+
 - pnpm 8+
 - SQLite 3.30+
 
